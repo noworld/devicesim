@@ -9,6 +9,10 @@ public enum SignalType {
 	INTERRUPT,
 	REFRESH,
 	MEMORY,
-	IO;
+	IO,
+	BUSREQ,
+	BUSACK,
+	IRQ,
+	NMI;
 	
 }

@@ -3,18 +3,9 @@ package red.arpanet.cputest;
 public class DeviceConfig {
 
 	protected String name;
-	protected String initScript;
-	protected String runScript;
 	protected String enableScript;
-	protected String pollScript;
-
-	public String getInitScript() {
-		return initScript;
-	}
-
-	public void setInitScript(String initScript) {
-		this.initScript = initScript;
-	}
+	protected String runSript;
+	protected int enableAddress = -1;
 
 	public String getName() {
 		return name;
@@ -22,14 +13,6 @@ public class DeviceConfig {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getRunScript() {
-		return runScript;
-	}
-
-	public void setRunScript(String script) {
-		this.runScript = script;
 	}
 
 	public String getEnableScript() {
@@ -40,12 +23,20 @@ public class DeviceConfig {
 		this.enableScript = enableScript;
 	}
 
-	public String getPollScript() {
-		return pollScript;
+	public String getRunSript() {
+		return runSript;
 	}
 
-	public void setPollScript(String pollScript) {
-		this.pollScript = pollScript;
+	public void setRunSript(String runSript) {
+		this.runSript = runSript;
+	}
+
+	public int getEnableAddress() {
+		return enableAddress;
+	}
+
+	public void setEnableAddress(int enableAddress) {
+		this.enableAddress = enableAddress;
 	}
 
 }

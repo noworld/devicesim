@@ -12,6 +12,10 @@ function poll() {
 	return new BusMessage();
 }
 
+function enable(var busMsg) {
+	return true;
+}
+
 function run(var busMsg) {
 	return true;
 }

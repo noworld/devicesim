@@ -20,33 +20,26 @@ public class CpuTester {
 		
 		DeviceConfig cpuConfig = new DeviceConfig();
 		cpuConfig.setName("CPU 0");
-		cpuConfig.setInitScript("var a, f, b, c, x, y, pc = 0, sp = 0;");
-		cpuConfig.setRunScript("print('device 1 run\\n'); runResult = true;");
-		cpuConfig.setEnableScript("enableResult = false;");
-		cpuConfig.setPollScript("print('Requesting address ' + pc + '\\n'); "
-				+ " busMsg = new BusMessage();"
-				+ " busMsg.setSource(thisDevice);"
-				+ " busMsg.setAddress(pc++);"
-				+ " busMsg.setData('Data test!');"
-				+ " pollResult = true;");		
+		cpuConfig.setEnableScript("/devices/cpu/Zaptron/zaptron_80_enable.js");
+		cpuConfig.setRunSript("/devices/cpu/Zaptron/zaptron_80.js");
 		
 		DeviceConfig romConfig = new DeviceConfig();
 		romConfig.setName("ROM 1");
-		romConfig.setRunScript("print('Device ROM 1 executed!\\n'); runResult = true;");
-		romConfig.setEnableScript("enableResult = busMsg.getAddress() == 1;");
-		romConfig.setPollScript("pollResult = false;");
+		romConfig.setEnableAddress(1);
+		romConfig.setEnableScript("deviceEnable.js");
+		romConfig.setRunSript("/devices/mem/Zaptron/zaptron_27c64_8k.js");
 		
 		DeviceConfig ramConfig = new DeviceConfig();
 		ramConfig.setName("RAM 2");
-		ramConfig.setRunScript("print('device RAM 2 run\\n'); runResult = true;");
-		ramConfig.setEnableScript("enableResult = busMsg.getAddress() == 2;");
-		ramConfig.setPollScript("pollResult = false;");
+		romConfig.setEnableAddress(2);
+		ramConfig.setEnableScript("deviceEnable.js");
+		ramConfig.setRunSript("/devices/cpu/Zaptron/grebby_GRS801_8k.js");
 		
 		DeviceConfig serialConfig = new DeviceConfig();
 		serialConfig.setName("SERIAL 3");
-		serialConfig.setRunScript("print('device SERIAL 3 run\\n'); runResult = true;");
-		serialConfig.setEnableScript("enableResult = busMsg.getAddress() == 3;");
-		serialConfig.setPollScript("pollResult = false;");
+		romConfig.setEnableAddress(3);
+		ramConfig.setEnableScript("deviceEnable.js");
+		serialConfig.setRunSript("/devices/cpu/Zaptron/zaptron_80.js");
 		
 		Bus b = new Bus(bc);
 		Device cpu = null;

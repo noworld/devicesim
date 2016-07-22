@@ -2,3 +2,9 @@ Device 0 on the bus list is the default master. Make that the CPU.
 
 Each device gets polled once per cycle
 Adding a device to a bus sets the bus on the device 
+Responders should put the requested address in the response message
+
+init - Runs when the device is first created.
+poll - Runs once per bus cycle. Can send a bus message.
+enable - Checks to see if the device is listening on the requested address.
+run - Takes action based on the received bus message.

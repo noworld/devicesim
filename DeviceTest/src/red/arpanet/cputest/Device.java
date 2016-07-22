@@ -1,5 +1,7 @@
 package red.arpanet.cputest;
 
+import static red.arpanet.logging.Log.e;
+import static red.arpanet.logging.Log.w;
 import static red.arpanet.logging.Log.i;
 
 import java.io.IOException;
@@ -10,72 +12,54 @@ import javax.script.ScriptException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
-import static red.arpanet.logging.Log.e;
+import static red.arpanet.cputest.DeviceScriptValues.*;
 
 public class Device extends Active {
-	
+
 	private static final Logger LOG = Logger.getLogger(Device.class);
-	
-	private static final String MESSAGE_VARIABLE = "busMsg";
-	private static final String ENABLE_RESULT = "enableResult";
-	private static final String RUN_RESULT = "runResult";
-	private static final String THIS_DEVICE = "thisDevice";
+
+	private static final Object[] EMPTY_ARGS = new Object[]{};
 
 	protected String name;
 	protected Bus bus;
-	protected String initScript;
-	protected String pollScript;
 	protected String runScript;
 	protected String enableScript;
 	protected BusMessage busMsg = null;
-	
+
 	public Device(DeviceConfig dc ) throws ScriptException {
 		super();
-		
+
 		Charset charSet = Charset.defaultCharset();
-		
-		this.name = dc.name;
-		
+
+		this.name = dc.getName();
+
 		try {
-			if(StringUtils.isNoneBlank(dc.getRunScript())) {
-				this.runScript = IOUtils.toString(Device.class.getResourceAsStream(dc.getRunScript()), charSet);
-			}
-		} catch (IOException e) {
-			e(LOG,String.format("Could not load run script: %s", dc.getRunScript()),e);
-		}
-		
-		try {
-			if(StringUtils.isNotBlank(dc.getEnableScript())) {
+			if(StringUtils.isNotBlank(dc.getRunSript())) {
+
+				this.runScript = IOUtils.toString(Device.class.getResourceAsStream(dc.getRunSript()), charSet);
+
+				if(StringUtils.isNotBlank(this.runScript)) {				
+					engine.put(THIS_DEVICE.getName(), this);
+					engine.eval(this.runScript);
+					if(!(Boolean)func.invokeFunction(ENABLE.getName(), EMPTY_ARGS)) {
+						w(LOG,String.format("Problem running init script for device: %s, script: %s", dc.getName(), dc.getRunSript()));
+					}
+				}
+				
 				this.enableScript = IOUtils.toString(Device.class.getResourceAsStream(dc.getEnableScript()), charSet);
-			}
-		} catch (IOException e) {
-			e(LOG,String.format("Could not load enable script: %s", dc.getEnableScript()),e);
-		}
-		
-		try {
-			if(StringUtils.isNotBlank(dc.getPollScript())) {
-				this.pollScript = IOUtils.toString(Device.class.getResourceAsStream(dc.getPollScript()), charSet);
-			}
-		} catch (IOException e) {
-			e(LOG,String.format("Could not load poll script: %s", dc.getPollScript()),e);
-		}
-		
-		try {
-			if(StringUtils.isNotBlank(dc.getInitScript())) {
 				
-				this.initScript = IOUtils.toString(Device.class.getResourceAsStream(dc.getInitScript()), charSet);
-				
-				if(StringUtils.isNotBlank(this.initScript)) {				
-					engine.put(THIS_DEVICE, this);
-					engine.eval(this.initScript);
+				if(StringUtils.isNotBlank(this.enableScript)) {				
+					engine.eval(this.enableScript);
+					if(dc.getEnableAddress() >= 0) {
+						engine.put(ENABLE_ADDRESS.getName(), dc.getEnableAddress());
+					}
 				}
 			}
-		} catch (IOException e) {
-			e(LOG,String.format("Could not load init script: %s", dc.getInitScript()),e);
+		} catch (IOException | NoSuchMethodException e) {
+			e(LOG,String.format("Exception initializing device: %s, script: %s", dc.getName(), dc.getRunSript()),e);
 		}
-		
-		
+
+
 	}
 
 	public String getName() {
@@ -110,75 +94,58 @@ public class Device extends Active {
 		this.enableScript = enableScript;
 	}
 
-	public boolean enableDevice(BusMessage message) {
-		
-		if(StringUtils.isBlank(enableScript)) {
-			return false;
+	public BusMessage poll() {
+
+		BusMessage busMsg = null;
+
+		i(LOG,String.format("Device %s polling!", name));
+
+		try {						
+			Object message = func.invokeFunction(RUN.getName(), EMPTY_ARGS);
+			busMsg = message == null ? null : (BusMessage)message;
+		} catch (ScriptException | NoSuchMethodException e) {
+			e(LOG,String.format("Exception polling device %s!", this.name),e);
 		}
-		
+
+		return busMsg;
+	}
+
+	public boolean enableDevice(BusMessage message) {
+
 		if(message == null) {
 			return false;
 		}
-		
+
 		boolean match = false;
-		
+
 		try {		
-			engine.put(MESSAGE_VARIABLE, message);
-			engine.eval(enableScript);
-			match = ((Boolean)engine.get(ENABLE_RESULT)).booleanValue();
-		} catch (ScriptException e) {
-			e.printStackTrace();
+			match = (Boolean)func.invokeFunction(ENABLE.getName(), message);
+		} catch (ScriptException | NoSuchMethodException e) {
+			e(LOG,String.format("Exception enabling device %s!", this.name),e);
 			match = false;
 		}
-		
+
 		if(match) {
 			i(LOG,String.format("Device %s enabled!", name));
 		}
-		
+
 		return match;
 	}
-	
+
 	public boolean runDevice(BusMessage message) {
-		
-		if(StringUtils.isBlank(runScript)) {
-			return true;
-		}
 
 		boolean success = false;
-		
+
 		i(LOG,String.format("Device %s running!", name));
-		
-		try {		
-			engine.put(MESSAGE_VARIABLE, message);
-			engine.eval(runScript);
-			success = ((Boolean)engine.get(RUN_RESULT)).booleanValue();
-		} catch (ScriptException e) {
-			e.printStackTrace();
+
+		try {
+			success = (Boolean)func.invokeFunction(RUN.getName(), message);			
+		} catch (ScriptException | NoSuchMethodException e) {
+			e(LOG,String.format("Exception running device %s!", this.name),e);
 			success = false;
 		}
-		
+
 		return success;
 	}
 
-	public BusMessage poll() {
-		
-		if(StringUtils.isBlank(pollScript)) {
-			return null;
-		}
-		
-		BusMessage busMsg = null;
-		
-		i(LOG,String.format("Device %s polling!", name));
-		
-		try {			
-			engine.eval(pollScript);
-			Object message = engine.get(MESSAGE_VARIABLE);
-			busMsg = message == null ? null : (BusMessage)message;
-		} catch (ScriptException e) {
-			e.printStackTrace();
-		}
-		
-		return busMsg;
-	}
-	
 }
