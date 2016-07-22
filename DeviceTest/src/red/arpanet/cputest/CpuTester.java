@@ -20,29 +20,28 @@ public class CpuTester {
 		
 		DeviceConfig cpuConfig = new DeviceConfig();
 		cpuConfig.setName("CPU 0");
-		cpuConfig.setScripts(new String[]{"/devices/cpu/Zaptron/zaptron_80_enable.js",
-			"/devices/cpu/Zaptron/zaptron_80.js"});
+		cpuConfig.setScripts(new String[]{"/device_scripts/zaptron_80.js"});
 		
 		DeviceConfig romConfig = new DeviceConfig();
 		romConfig.setName("ROM 1");
 		romConfig.setEnableAddress(0);
 		romConfig.setAddressSize(8192);
-		romConfig.setScripts(new String[]{"/device_enable.js",
-			"/devices/mem/Zaptron/zaptron_27c64_8k.js"});
+		romConfig.setScripts(new String[]{"/device_scripts/device_enable.js",
+			"/device_scripts/zaptron_27c64_8k.js"});
 		
 		DeviceConfig ramConfig = new DeviceConfig();
 		ramConfig.setName("RAM 2");
 		ramConfig.setEnableAddress(8192);
 		ramConfig.setAddressSize(8192);
-		ramConfig.setScripts(new String[]{"/device_enable.js",
-			"/devices/mem/Grebby/grebby_GRS801_8k.js"});
+		ramConfig.setScripts(new String[]{"/device_scripts/device_enable.js",
+			"/device_scripts/grebby_GRS801_8k.js"});
 		
 		DeviceConfig serialConfig = new DeviceConfig();
 		serialConfig.setName("SERIAL 3");
 		serialConfig.setEnableAddress(16384);
 		serialConfig.setAddressSize(2);
-		serialConfig.setScripts(new String[]{"/device_enable.js",
-			"/devices/support/Zaptron/zaptron_sio.js"});
+		serialConfig.setScripts(new String[]{"/device_scripts/device_enable.js",
+			"/device_scripts/zaptron_sio.js"});
 		
 		Bus b = new Bus(bc);
 		Device cpu = null;

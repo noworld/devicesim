@@ -26,6 +26,14 @@ function init() {
 	return true;
 }
 
+function enable(busMsg) {
+	if(busMsg === null) {
+		return false;
+	}
+	
+	return busMsg.getAddress() == requestedAddress;
+}
+
 function poll() {
 
 	busMsg = new BusMessage();
