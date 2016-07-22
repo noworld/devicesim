@@ -3,6 +3,7 @@ package red.arpanet.cputest;
 public enum DeviceScriptValues {
 	THIS_DEVICE("thisDevice"),
 	ENABLE_ADDRESS("enableAddress"),
+	ADDRESS_SIZE("addressSize"),
 	INIT("init"),
 	ENABLE("enable"),
 	POLL("poll"),

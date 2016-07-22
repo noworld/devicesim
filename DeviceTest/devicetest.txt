@@ -4,7 +4,18 @@ Each device gets polled once per cycle
 Adding a device to a bus sets the bus on the device 
 Responders should put the requested address in the response message
 
+Bus Sequence:
+ 1. Poll the master
+ 2. Loop over the other devices: run then poll
+ 3. Run the master
+ 4. Clear the queue
+
+Javascript Device Functions
+---------------------------
+**REQUIRED**
 init - Runs when the device is first created.
 poll - Runs once per bus cycle. Can send a bus message.
 enable - Checks to see if the device is listening on the requested address.
-run - Takes action based on the received bus message.
+run - Takes action based on the received bus message, can set up a message to send during polling.
+**CONTEXTUAL**
+flashChip - saves memory on a ROM chip

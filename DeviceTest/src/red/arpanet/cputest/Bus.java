@@ -56,6 +56,14 @@ public class Bus implements Runnable  {
 			
 			if((lastTime + speed) < currentTime) {
 				
+				/*
+				 * Sequence:
+				 *  1. Poll the master
+				 *  2. Loop over the other devices: run then poll
+				 *  3. Run the master
+				 *  4. Clear the queue
+				 */
+				
 				//Let the bus master prime the queue
 				msgq.add(master.poll());
 			
@@ -64,25 +72,25 @@ public class Bus implements Runnable  {
 					
 					Device d = devices.get(i);
 					
-					//Every device gets a poll
-					BusMessage nextMsg = d.poll();
-					
 					//TODO: If we get a bus master request (DMA)
 					//then set the device to the next bus master
 					
 					//TODO: If we get an interrupt request (IRQ),
 					//then interrupt
-					
-					//Add the message to the queue
-					if(nextMsg != null) {
-						msgq.add(nextMsg);
-					}
 
 					//If we have a message
 					//See if it is meant for the current device
 					if(!msgq.isEmpty() && d.enableDevice(msgq.peek())) {
 						//If it is, then send the message to the device
 						d.runDevice(msgq.poll());
+					}
+					
+					//Every device gets a poll after they get a chance to run
+					BusMessage nextMsg = d.poll();
+					
+					//Add the message to the queue
+					if(nextMsg != null) {
+						msgq.add(nextMsg);
 					}
 
 				}

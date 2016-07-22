@@ -3,6 +3,7 @@ package red.arpanet.cputest;
 import static red.arpanet.logging.Log.e;
 import static red.arpanet.logging.Log.w;
 import static red.arpanet.logging.Log.i;
+import static red.arpanet.logging.Log.d;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -19,47 +20,60 @@ public class Device extends Active {
 	private static final Logger LOG = Logger.getLogger(Device.class);
 
 	private static final Object[] EMPTY_ARGS = new Object[]{};
+	private static final Charset CHAR_SET = Charset.defaultCharset();
 
 	protected String name;
 	protected Bus bus;
-	protected String runScript;
-	protected String enableScript;
-	protected BusMessage busMsg = null;
+	protected String[] scripts;
+	protected int enableAddress;
+	protected int addressSize;
 
 	public Device(DeviceConfig dc ) throws ScriptException {
 		super();
 
-		Charset charSet = Charset.defaultCharset();
+		d(LOG,String.format("Creating device %s.", dc.getName()));
 
 		this.name = dc.getName();
+		this.scripts = dc.getScripts();
+		this.enableAddress = dc.getEnableAddress();
+		this.addressSize = dc.getAddressSize();
 
-		try {
-			if(StringUtils.isNotBlank(dc.getRunSript())) {
+		initDevice();
+	}
 
-				this.runScript = IOUtils.toString(Device.class.getResourceAsStream(dc.getRunSript()), charSet);
+	protected void initDevice() {
+		//Set a property on the engine
+		//for accessing this java object
+		engine.put(THIS_DEVICE.getName(), this);
+		//Set the address range for the device enable
+		engine.put(ENABLE_ADDRESS.getName(), this.enableAddress);
+		engine.put(ADDRESS_SIZE.getName(), this.addressSize);
 
-				if(StringUtils.isNotBlank(this.runScript)) {				
-					engine.put(THIS_DEVICE.getName(), this);
-					engine.eval(this.runScript);
-					if(!(Boolean)func.invokeFunction(ENABLE.getName(), EMPTY_ARGS)) {
-						w(LOG,String.format("Problem running init script for device: %s, script: %s", dc.getName(), dc.getRunSript()));
+		//Check to make sure there are scripts available
+		if(this.scripts != null && this.scripts.length > 0) {
+			//Load each script in order
+			for(int i = 0; i < this.scripts.length; i++) {
+				try {
+					//If the script is populated, then run it
+					if(StringUtils.isNotBlank(this.scripts[i])) {
+						//Eval the script
+						String tempScript = IOUtils.toString(Device.class.getResourceAsStream(this.scripts[i]), CHAR_SET);
+						engine.eval(tempScript);
 					}
-				}
-				
-				this.enableScript = IOUtils.toString(Device.class.getResourceAsStream(dc.getEnableScript()), charSet);
-				
-				if(StringUtils.isNotBlank(this.enableScript)) {				
-					engine.eval(this.enableScript);
-					if(dc.getEnableAddress() >= 0) {
-						engine.put(ENABLE_ADDRESS.getName(), dc.getEnableAddress());
-					}
+				} catch (IOException | ScriptException e) {
+					e(LOG,String.format("Exception loading device script: %s, script: %s", this.name, this.scripts[i]),e);
 				}
 			}
-		} catch (IOException | NoSuchMethodException e) {
-			e(LOG,String.format("Exception initializing device: %s, script: %s", dc.getName(), dc.getRunSript()),e);
+			
+			//Invoke the initialization function
+			try {
+				if(!(Boolean)func.invokeFunction(INIT.getName(), EMPTY_ARGS)) {
+					w(LOG,String.format("Problem initializing device: %s", this.name));
+				}
+			} catch (NoSuchMethodException | ScriptException e) {
+				e(LOG,String.format("Exception initializing device: %s", this.name),e);
+			}
 		}
-
-
 	}
 
 	public String getName() {
@@ -78,20 +92,28 @@ public class Device extends Active {
 		this.bus = bus;
 	}
 
-	public String getRunScript() {
-		return runScript;
+	public String[] getScripts() {
+		return scripts;
 	}
 
-	public void setRunScript(String script) {
-		this.runScript = script;
+	public void setScripts(String[] scripts) {
+		this.scripts = scripts;
 	}
 
-	public String getEnableScript() {
-		return enableScript;
+	public int getEnableAddress() {
+		return enableAddress;
 	}
 
-	public void setEnableScript(String enableScript) {
-		this.enableScript = enableScript;
+	public void setEnableAddress(int enableAddress) {
+		this.enableAddress = enableAddress;
+	}
+
+	public int getAddressSize() {
+		return addressSize;
+	}
+
+	public void setAddressSize(int addressSize) {
+		this.addressSize = addressSize;
 	}
 
 	public BusMessage poll() {
@@ -101,7 +123,7 @@ public class Device extends Active {
 		i(LOG,String.format("Device %s polling!", name));
 
 		try {						
-			Object message = func.invokeFunction(RUN.getName(), EMPTY_ARGS);
+			Object message = func.invokeFunction(POLL.getName(), EMPTY_ARGS);
 			busMsg = message == null ? null : (BusMessage)message;
 		} catch (ScriptException | NoSuchMethodException e) {
 			e(LOG,String.format("Exception polling device %s!", this.name),e);

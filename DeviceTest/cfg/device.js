@@ -12,6 +12,10 @@ function poll() {
 	return new BusMessage();
 }
 
-function run(var busMsg) {
+function run(busMsg) {
 	return true;
+}
+
+function flashChip(data) {
+	
 }

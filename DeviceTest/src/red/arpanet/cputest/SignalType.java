@@ -13,6 +13,7 @@ public enum SignalType {
 	BUSREQ,
 	BUSACK,
 	IRQ,
-	NMI;
+	NMI,
+	ACK;
 	
 }

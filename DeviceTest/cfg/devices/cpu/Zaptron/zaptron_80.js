@@ -16,14 +16,14 @@ importClass(Packages.red.arpanet.cputest.SignalType);
  *  - T6 - Check Interrupt
  * */
 
-var a, f, b, c, x, y, pc = 0, sp = 0;
+var a=0, f=0, b=0, c=0, x=0, y=0, pc = 0, sp = 0;
 
 var cycleCounter = 0;
 var refresh = 32768;
 var requestedAddress = -1;
 
 function init() {
-	return true();
+	return true;
 }
 
 function poll() {
@@ -33,15 +33,18 @@ function poll() {
 	requestedAddress = -1;
 	
 	if(cycleCounter == 0) {
+		print("CPU Cycle 0 - Begin New Cycle\n");
 		busMsg.getActiveSignals().add(SignalType.M1);				
 	} else if(cycleCounter == 1) {		
+		print("CPU Cycle 1 - Fetch Instruction\n");
 		busMsg.getActiveSignals().add(SignalType.M1);
 		busMsg.getActiveSignals().add(SignalType.FETCH);
 		busMsg.getActiveSignals().add(SignalType.READ);
 		busMsg.getActiveSignals().add(SignalType.MEMORY);		
 		busMsg.setAddress(pc);
 		requestedAddress = pc;
-	} else if(cycleCounter == 2 || cycleCounter == 3) {		
+	} else if(cycleCounter == 2 || cycleCounter == 3) {
+		print("CPU Cycle " + cycleCounter + " - Refresh\n");
 		busMsg.getActiveSignals().add(SignalType.REFRESH);
 		busMsg.getActiveSignals().add(SignalType.WRITE);
 		busMsg.getActiveSignals().add(SignalType.MEMORY);		
@@ -51,48 +54,49 @@ function poll() {
 			refresh++;
 		}
 	} else if(cycleCounter == 4) {;
-		busMsg.getActiveSignals().add(SignalType.READ);
-		busMsg.getActiveSignals().add(SignalType.MEMORY);		
-		busMsg.setAddress(a);
-		requestedAddress = a;
+		print("CPU Cycle 4 - Read Memory\n");
+//		busMsg.getActiveSignals().add(SignalType.READ);
+//		busMsg.getActiveSignals().add(SignalType.MEMORY);		
+//		busMsg.setAddress(a);
+//		requestedAddress = a;
 	} else if(cycleCounter == 5) {
-		busMsg.getActiveSignals().add(SignalType.WERITE);
-		busMsg.getActiveSignals().add(SignalType.MEMORY);		
-		busMsg.setAddress(b);
+		print("CPU Cycle 5 - Write Memory\n");
+//		busMsg.getActiveSignals().add(SignalType.WRITE);
+//		busMsg.getActiveSignals().add(SignalType.MEMORY);		
+//		busMsg.setAddress(b);
 	} else if(cycleCounter == 6) {
+		print("CPU Cycle 6 - Interrupt Listen\n");
 		//Interrupt listen
-		return null;
+		busMsg = null;
 	}
-	
-	cycleCounter++;
-	if(cycleCounter > 6) {
+		
+	if(cycleCounter++ > 6) {
 		cycleCounter = 0;
 	}
 	
 	pc++;
-	if(pc > 65535) {
+	if(pc >= 65535) {
 		pc = 0;
 	}
-	
-	refresh++;
-	if(refresh > 65535) {
-		pc = 0;
+
+	if(refresh >= 65535) {
+		refresh = 0;
 	}
 	
-	return new busMsg;
+	return busMsg;
 }
 
-function run(var busMsg) {
+function run(busMsg) {
 	
 	if(busMsg == null) {
 		return false;
 	}
 	
-	parseMessage(busMessage.getData());
+	parseMessage(busMsg.getData());
 	
 	return true;
 }
 
 function parseMessage(data) {
-	print('Parsing response message...\\n');
+	print('Parsing response message...\n');
 }

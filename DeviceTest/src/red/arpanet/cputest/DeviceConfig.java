@@ -3,9 +3,9 @@ package red.arpanet.cputest;
 public class DeviceConfig {
 
 	protected String name;
-	protected String enableScript;
-	protected String runSript;
+	protected String[] scripts;
 	protected int enableAddress = -1;
+	protected int addressSize = 1;
 
 	public String getName() {
 		return name;
@@ -15,20 +15,12 @@ public class DeviceConfig {
 		this.name = name;
 	}
 
-	public String getEnableScript() {
-		return enableScript;
+	public String[] getScripts() {
+		return scripts;
 	}
 
-	public void setEnableScript(String enableScript) {
-		this.enableScript = enableScript;
-	}
-
-	public String getRunSript() {
-		return runSript;
-	}
-
-	public void setRunSript(String runSript) {
-		this.runSript = runSript;
+	public void setScripts(String[] scripts) {
+		this.scripts = scripts;
 	}
 
 	public int getEnableAddress() {
@@ -38,5 +30,15 @@ public class DeviceConfig {
 	public void setEnableAddress(int enableAddress) {
 		this.enableAddress = enableAddress;
 	}
+
+	public int getAddressSize() {
+		return addressSize;
+	}
+
+	public void setAddressSize(int addressSize) {
+		this.addressSize = addressSize;
+	}
+
+	
 
 }
