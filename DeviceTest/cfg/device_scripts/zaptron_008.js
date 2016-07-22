@@ -147,6 +147,9 @@ function executeInstruction() {
 
 /* *
  * 
+ *	TODO: Separate the execution unit out into
+ *	a static object to optimize performance?
+ *
  *  *  Instruction Set
  *  
  *  LDA n		- Load accumulator with data from memory location n
@@ -180,6 +183,8 @@ function executeInstruction() {
  * */
 
 var executionUnit = {
+	//No Operation
+	"NOP" : Nop,
 	//Load group
 	"LDA" : Lda,
 	"LAF" : Laf,
@@ -210,6 +215,10 @@ var executionUnit = {
 	"SUM" : Sum,
 };
 
+function Nop() {
+	d("Instruction is Nop.");
+	instructionQueue = [];
+}
 
 function Lda() {
 	d("Instruction is LDA. Queue size is: " + instructionQueue.length + ".");

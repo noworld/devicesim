@@ -12,16 +12,17 @@ public class CpuTester {
 
 	private static final Logger LOG = Logger.getLogger(CpuTester.class);
 
-	private static final long RUNTIME_MS = 20000L;
+	private static final long RUNTIME_MS = 2000L;
 
-	private static final String[] ROM = new String[]{"LDA","2","Hello, World!",
+	private static final String[] ROM = new String[]{
+			"LDA","2","30","LXA","INA","x","x","x","x","x",
 			"x","x","x","x","x","x","x","x","x","x",
-			"LAF","x","x","x","x","x","x","x","x","x",
-			"x","x","x","x","x","x","x","x","x","x"};
+			"LAF","x","x","x","x","x","x","x","x","30",
+			"This","is","a","test","x","x","x","x","x","x"};
 
 	public static void main(String[] args) {
 		BusConfig bc = new BusConfig();
-		bc.setSpeed(100L);
+		bc.setSpeed(-1L);
 
 		DeviceConfig cpuConfig = new DeviceConfig();
 		cpuConfig.setName("CPU 0");
