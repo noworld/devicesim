@@ -1,0 +1,4 @@
+Device 0 on the bus list is the default master. Make that the CPU.
+
+Each device gets polled once per cycle
+Adding a device to a bus sets the bus on the device 

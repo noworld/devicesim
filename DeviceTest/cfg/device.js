@@ -1,0 +1,4 @@
+
+function decodeAddress(busMsg) {
+	
+}
