@@ -4,10 +4,13 @@ public enum DeviceScriptValues {
 	THIS_DEVICE("thisDevice"),
 	ENABLE_ADDRESS("enableAddress"),
 	ADDRESS_SIZE("addressSize"),
+	DESC("desc"),
 	INIT("init"),
 	ENABLE("enable"),
 	POLL("poll"),
-	RUN("run");
+	RUN("run"),
+	FLASH_CHIP("flashChip"),
+	VERIFY_FLASH("verifyFlash");
 	
 	private String name;
 	

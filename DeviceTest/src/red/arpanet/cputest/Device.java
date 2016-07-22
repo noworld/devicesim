@@ -169,5 +169,24 @@ public class Device extends Active {
 
 		return success;
 	}
+	
+	public Object invokeFunc(String funcName, Object[] args) {
+		
+		Object result = null;
+
+		d(LOG,String.format("Invoking arbitrary function %s on device %s!", funcName, this.name));
+
+		try {
+			result = func.invokeFunction(funcName, args);			
+		} catch (ScriptException | NoSuchMethodException e) {
+			w(LOG,String.format("Exception invoking arbitrary function %s on device %s!", funcName, this.name),e);
+		}
+
+		return result;
+	}
+	
+	public Object readVar(String varName) {
+		return engine.get(varName);
+	}
 
 }

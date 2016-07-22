@@ -1,7 +1,8 @@
 //Basic device script
-importPackage(Packages.red.arpanet.cputest);
 importClass(Packages.red.arpanet.cputest.BusMessage);
 importClass(Packages.red.arpanet.cputest.SignalType);
+
+var desc = "Zaptron Serial I/O Chip";
 
 var buf1 = new Array();
 var buf2 = new Array();

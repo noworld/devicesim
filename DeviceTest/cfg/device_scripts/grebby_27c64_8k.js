@@ -1,9 +1,10 @@
 //Basic device script
-importPackage(Packages.red.arpanet.cputest);
 importClass(Packages.red.arpanet.cputest.BusMessage);
 importClass(Packages.red.arpanet.cputest.SignalType);
 
-var mem = new Array(8192);
+var desc = "GREBBY Brand 27C64 8K Flash ROM chip";
+var chipSize = 8192;
+var mem = new Array(chipSize);
 
 var nextMessage = null;
 
