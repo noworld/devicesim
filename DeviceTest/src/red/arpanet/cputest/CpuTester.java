@@ -22,7 +22,7 @@ public class CpuTester {
 
 	public static void main(String[] args) {
 		BusConfig bc = new BusConfig();
-		bc.setSpeed(-1L);
+		bc.setSpeed(100L);
 
 		DeviceConfig cpuConfig = new DeviceConfig();
 		cpuConfig.setName("CPU 0");

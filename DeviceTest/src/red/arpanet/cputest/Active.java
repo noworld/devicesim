@@ -14,6 +14,9 @@ public abstract class Active {
 	
 	private static final Logger LOG = Logger.getLogger(Active.class);
 	
+	private static final String NASHORN_CLASS = "jdk.nashorn.api.scripting.NashornScriptEngine";
+	private static final String NASHORN_COMPAT_SCRIPT = "load(\"nashorn:mozilla_compat.js\");";
+	
 	protected final ScriptEngine engine;
 	protected final Invocable func;
 	
@@ -26,7 +29,13 @@ public abstract class Active {
 	    // evaluate JavaScript code from String
 	    try {
 			engine.eval("print('SCRIPT ENGINE ACTIVATED\\n')");
+			
 			d(LOG, engine.getClass().getName());
+			
+			if(engine.getClass().getName().equals(NASHORN_CLASS)) {
+				engine.eval(NASHORN_COMPAT_SCRIPT);
+			}
+						
 		} catch (ScriptException e) {
 			e(LOG,"Exception starting Javascript engine.",e);
 		}

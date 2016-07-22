@@ -25,7 +25,7 @@ function flashChip(flashData) {
 	}
 	
 	print("Flashing ROM chip...\n");
-	for(var i = 0; i < chipSize; i++) {
+	for(var i = 0; i < data.length; i++) {
 		if(flashData.getDisplay()) {
 			print("Flashing location " + i + ": " + data[i] + " -> " + mem[i] + "\n");
 		}
@@ -41,7 +41,7 @@ function verifyFlash(flashData) {
 	
 	var data = flashData.getData();
 	
-	for(var i = 0; i < chipSize; i++) {
+	for(var i = 0; i < data.length; i++) {
 		
 		if(flashData.getDisplay()) {
 			print("Comparing location " + i + ": " + data[i] + " <--> " + mem[i] + "\n");
