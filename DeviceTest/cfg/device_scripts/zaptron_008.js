@@ -28,7 +28,7 @@ var xreg = 2;
 var yreg = 3;
 var pcounter = 4;
 var stackp = 5;
-var regisers = new Int8Array(6);
+var registers = new Int8Array(6);
 
 var instructionQueue = new Array();
 var cycleCounter = 0;
