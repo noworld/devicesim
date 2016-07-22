@@ -5,6 +5,7 @@ importClass(Packages.red.arpanet.cputest.SignalType);
 var desc = "GREBBY Brand 27C64 8K Flash ROM chip";
 var chipSize = 8192;
 var mem = new Array(chipSize);
+var byteMem = new Int8Array(chipSize);
 
 var nextMessage = null;
 

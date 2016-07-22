@@ -18,7 +18,17 @@ var desc = "Zaptron x008 Microcomputer Brain - Buy a computer for the price of a
  *  
  *  */
 
-var a=0, f="00000000", x=0, y=0, pc = 0, sp = 0;
+var a=0, f= new Int8(), x=0, y=0, pc = 0, sp = 0;
+
+//TODO: Use signed bytes instead of variables
+//TODO: Convert to true 8-bit
+var accum = 0;
+var flags = 1;
+var xreg = 2;
+var yreg = 3;
+var pcounter = 4;
+var stackp = 5;
+var regisers = new Int8Array(6);
 
 var instructionQueue = new Array();
 var cycleCounter = 0;
