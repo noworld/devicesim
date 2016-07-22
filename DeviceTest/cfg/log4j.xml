@@ -7,6 +7,10 @@
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%-5p %d{ISO8601} %-5c{3}:%L %x %m%n" />
 		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="TRACE" />
+			<param name="LevelMax" value="WARN" />
+		</filter>
 	</appender>
 
 	<appender name="STDERR" class="org.apache.log4j.ConsoleAppender">

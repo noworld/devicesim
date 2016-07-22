@@ -23,13 +23,11 @@ var desc = "Zaptron 80 CPU - Better than the Zaptron 79!";
 
 var a=0, f=0, b=0, c=0, x=0, y=0, pc = 0, sp = 0;
 
+var instructionQueue = new Array();
 var cycleCounter = 0;
 var refresh = 32768;
 var requestedAddress = -1;
 var opMsg;
-var currentInstruction;
-var operand1;
-var operand2;
 
 function init() {
 	return true;
@@ -48,6 +46,8 @@ function poll() {
 	busMsg = new BusMessage();
 	busMsg.setSource(thisDevice);
 	requestedAddress = -1;	
+	
+	print("Value of accumulator: " + a + "\n");
 	
 	if(cycleCounter == 0) {
 		print("CPU Cycle 0 - Begin New Cycle\n");
@@ -71,23 +71,23 @@ function poll() {
 	} else if(cycleCounter == 4) {;
 		print("CPU Cycle 4 - Read Memory\n");
 		
-		if(opMsg !== null 
+		if(opMsg !== undefined 
 				&& opMsg.getActiveSignals().contains(SignalType.READ)
 				&& opMsg.getActiveSignals().contains(SignalType.MEMORY)) {
 			
 			busMsg = opMsg;
-			opMsg = null;
+			opMsg = undefined;
 		}
 			
 	} else if(cycleCounter == 5) {
 		print("CPU Cycle 5 - Write Memory\n");
 		
-		if(opMsg !== null 
+		if(opMsg !== undefined 
 				&& opMsg.getActiveSignals().contains(SignalType.WRITE)
 				&& opMsg.getActiveSignals().contains(SignalType.MEMORY)) {
 			
 			busMsg = opMsg;
-			opMsg = null;
+			opMsg = undefined;
 		}
 		
 	} else if(cycleCounter == 6) {
@@ -119,7 +119,7 @@ function run(busMsg) {
 		return false;
 	}
 	
-	parseMessage(busMsg.getData());
+	instructionQueue.push(busMsg.getData());
 	
 	print("Response source: " + busMsg.getSource().getName() + "\n");
 	print("Response address: " + busMsg.getAddress() + "\n");
@@ -128,30 +128,32 @@ function run(busMsg) {
 	return true;
 }
 
-function parseMessage(data) {
-	print('Parsing response message...\n');
-	
-	//If we have a new instruction
-	if(currentInstruction === "") {
-		currentInstruction = data;
-	} else if(operand1 === "") {
-		operand1 = data;
-	} else if(operand2 === "") {
-		operand2 = data;
-	}	
-
-}
-
 function executeInstruction() {
 
-	if(currentInstruction === "LDA") {
-		//if we have a full LDA instruction
-		if(operand1 !=== "") {
-			opMsg = new BusMessage();
-			opMsg.setSource(thisDevice);
-			opMsg.setAddress(operand1);
-			opMsg.getActiveSignals().add(SignalType.READ);
-			opMsg.getActiveSignals().add(SignalType.MEMORY);
+	print("Executing instruction cycle. Queue size is: " + instructionQueue.length + ".\n");
+	
+	if(instructionQueue.length > 0) {
+		
+		print("Head of queue is: " + instructionQueue[0] + "\n"); 
+		
+		if(instructionQueue[0] == "LDA") {
+			print("Instruction is LDA. Queue size is: " + instructionQueue.length + ".\n");
+
+			//On the second fetch, we have a full
+			//LDA instruction and we can fetch the
+			//memory location
+			if(instructionQueue.length == 2) {
+				print("Creating LDA memory fetch.\n");
+				opMsg = new BusMessage();
+				opMsg.setSource(thisDevice);
+				opMsg.setAddress(instructionQueue[1]);
+				opMsg.getActiveSignals().add(SignalType.READ);
+				opMsg.getActiveSignals().add(SignalType.MEMORY);
+			} else if(instructionQueue.length > 2){
+				print("Saving retrieved value to accumulator.\n");
+				a = instructionQueue[2];
+				instructionQueue = [];
+			}
 		}
 	}
 }

@@ -1,20 +1,23 @@
 package red.arpanet.cputest;
 
+import static red.arpanet.logging.Log.i;
+
 import java.util.Date;
 
 import javax.script.ScriptException;
 
 import org.apache.log4j.Logger;
 
-import static red.arpanet.logging.Log.i;
-
 public class CpuTester {
 
 	private static final Logger LOG = Logger.getLogger(CpuTester.class);
 
-	private static final long RUNTIME_MS = 4000L;
+	private static final long RUNTIME_MS = 20000L;
 
-	private static final String[] ROM = new String[]{"ABC","123"};
+	private static final String[] ROM = new String[]{"LDA","2","Hello, World!",
+			"x","x","x","x","x","x","x","x","x","x",
+			"LAF","x","x","x","x","x","x","x","x","x",
+			"x","x","x","x","x","x","x","x","x","x"};
 
 	public static void main(String[] args) {
 		BusConfig bc = new BusConfig();
@@ -22,7 +25,8 @@ public class CpuTester {
 
 		DeviceConfig cpuConfig = new DeviceConfig();
 		cpuConfig.setName("CPU 0");
-		cpuConfig.setScripts(new String[]{"/device_scripts/zaptron_80.js"});
+		cpuConfig.setScripts(new String[]{"/device_scripts/util.js",
+				"/device_scripts/zaptron_008.js"});
 
 		DeviceConfig romConfig = new DeviceConfig();
 		romConfig.setName("ROM 1");
@@ -84,6 +88,7 @@ public class CpuTester {
 		} finally {
 			b.stop();
 			i(LOG,"STOPPED");
+			i(LOG,"PC: " + Double.valueOf(cpu.readVar("pc").toString()).intValue());
 		}
 
 	}

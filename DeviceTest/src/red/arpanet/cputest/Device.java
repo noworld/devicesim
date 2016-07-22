@@ -120,7 +120,7 @@ public class Device extends Active {
 
 		BusMessage busMsg = null;
 
-		i(LOG,String.format("Device %s polling!", name));
+		d(LOG,String.format("Device %s polling!", name));
 
 		try {						
 			Object message = func.invokeFunction(POLL.getName(), EMPTY_ARGS);
@@ -148,7 +148,7 @@ public class Device extends Active {
 		}
 
 		if(match) {
-			i(LOG,String.format("Device %s enabled!", name));
+			d(LOG,String.format("Device %s enabled!", name));
 		}
 
 		return match;
@@ -158,7 +158,7 @@ public class Device extends Active {
 
 		boolean success = false;
 
-		i(LOG,String.format("Device %s running!", name));
+		d(LOG,String.format("Device %s running!", name));
 
 		try {
 			success = (Boolean)func.invokeFunction(RUN.getName(), message);			
