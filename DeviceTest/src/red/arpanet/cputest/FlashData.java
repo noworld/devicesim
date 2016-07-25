@@ -3,21 +3,21 @@ package red.arpanet.cputest;
 public class FlashData {
 
 	protected boolean display = false;
-	protected String[] data;
+	protected int[] data;
 	
 	public FlashData() {
 		
 	}
 	
-	public FlashData(String[] data) {
+	public FlashData(int[] data) {
 		this.data = data;
 	}
 
-	public String[] getData() {
+	public int[] getData() {
 		return data;
 	}
 
-	public void setData(String[] data) {
+	public void setData(int[] data) {
 		this.data = data;
 	}
 

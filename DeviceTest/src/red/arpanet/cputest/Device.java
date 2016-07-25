@@ -1,9 +1,15 @@
 package red.arpanet.cputest;
 
+import static red.arpanet.cputest.DeviceScriptValues.ADDRESS_SIZE;
+import static red.arpanet.cputest.DeviceScriptValues.ENABLE;
+import static red.arpanet.cputest.DeviceScriptValues.ENABLE_ADDRESS;
+import static red.arpanet.cputest.DeviceScriptValues.INIT;
+import static red.arpanet.cputest.DeviceScriptValues.POLL;
+import static red.arpanet.cputest.DeviceScriptValues.RUN;
+import static red.arpanet.cputest.DeviceScriptValues.THIS_DEVICE;
+import static red.arpanet.logging.Log.d;
 import static red.arpanet.logging.Log.e;
 import static red.arpanet.logging.Log.w;
-import static red.arpanet.logging.Log.i;
-import static red.arpanet.logging.Log.d;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -13,7 +19,6 @@ import javax.script.ScriptException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import static red.arpanet.cputest.DeviceScriptValues.*;
 
 public class Device extends Active {
 
