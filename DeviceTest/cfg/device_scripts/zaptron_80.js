@@ -47,20 +47,20 @@ function poll() {
 	busMsg.setSource(thisDevice);
 	requestedAddress = -1;	
 	
-	print("Value of accumulator: " + a + "\n");
+	print("Value of accumulator: " + a);
 	
 	if(cycleCounter == 0) {
-		print("CPU Cycle 0 - Begin New Cycle\n");
+		print("CPU Cycle 0 - Begin New Cycle");
 		busMsg.getActiveSignals().add(SignalType.M1);				
 	} else if(cycleCounter == 1) {		
-		print("CPU Cycle 1 - Fetch Instruction\n");
+		print("CPU Cycle 1 - Fetch Instruction");
 		busMsg.getActiveSignals().add(SignalType.FETCH);
 		busMsg.getActiveSignals().add(SignalType.READ);
 		busMsg.getActiveSignals().add(SignalType.MEMORY);		
 		busMsg.setAddress(pc);
 		requestedAddress = pc++;
 	} else if(cycleCounter == 2 || cycleCounter == 3) {
-		print("CPU Cycle " + cycleCounter + " - Refresh\n");
+		print("CPU Cycle " + cycleCounter + " - Refresh");
 		busMsg.getActiveSignals().add(SignalType.REFRESH);
 		busMsg.getActiveSignals().add(SignalType.MEMORY);		
 		busMsg.setAddress(refresh);
@@ -69,7 +69,7 @@ function poll() {
 			refresh++;
 		}
 	} else if(cycleCounter == 4) {;
-		print("CPU Cycle 4 - Read Memory\n");
+		print("CPU Cycle 4 - Read Memory");
 		
 		if(opMsg !== undefined 
 				&& opMsg.getActiveSignals().contains(SignalType.READ)
@@ -80,7 +80,7 @@ function poll() {
 		}
 			
 	} else if(cycleCounter == 5) {
-		print("CPU Cycle 5 - Write Memory\n");
+		print("CPU Cycle 5 - Write Memory");
 		
 		if(opMsg !== undefined 
 				&& opMsg.getActiveSignals().contains(SignalType.WRITE)
@@ -91,7 +91,7 @@ function poll() {
 		}
 		
 	} else if(cycleCounter == 6) {
-		print("CPU Cycle 6 - Interrupt Listen\n");
+		print("CPU Cycle 6 - Interrupt Listen");
 		//Interrupt listen
 		busMsg = null;
 	}
@@ -121,36 +121,36 @@ function run(busMsg) {
 	
 	instructionQueue.push(busMsg.getData());
 	
-	print("Response source: " + busMsg.getSource().getName() + "\n");
-	print("Response address: " + busMsg.getAddress() + "\n");
-	print("Response data: " + busMsg.getData() + "\n");
+	print("Response source: " + busMsg.getSource().getName() + "");
+	print("Response address: " + busMsg.getAddress() + "");
+	print("Response data: " + busMsg.getData() + "");
 	
 	return true;
 }
 
 function executeInstruction() {
 
-	print("Executing instruction cycle. Queue size is: " + instructionQueue.length + ".\n");
+	print("Executing instruction cycle. Queue size is: " + instructionQueue.length + ".");
 	
 	if(instructionQueue.length > 0) {
 		
-		print("Head of queue is: " + instructionQueue[0] + "\n"); 
+		print("Head of queue is: " + instructionQueue[0] + ""); 
 		
 		if(instructionQueue[0] == "LDA") {
-			print("Instruction is LDA. Queue size is: " + instructionQueue.length + ".\n");
+			print("Instruction is LDA. Queue size is: " + instructionQueue.length + ".");
 
 			//On the second fetch, we have a full
 			//LDA instruction and we can fetch the
 			//memory location
 			if(instructionQueue.length == 2) {
-				print("Creating LDA memory fetch.\n");
+				print("Creating LDA memory fetch.");
 				opMsg = new BusMessage();
 				opMsg.setSource(thisDevice);
 				opMsg.setAddress(instructionQueue[1]);
 				opMsg.getActiveSignals().add(SignalType.READ);
 				opMsg.getActiveSignals().add(SignalType.MEMORY);
 			} else if(instructionQueue.length > 2){
-				print("Saving retrieved value to accumulator.\n");
+				print("Saving retrieved value to accumulator.");
 				a = instructionQueue[2];
 				instructionQueue = [];
 			}

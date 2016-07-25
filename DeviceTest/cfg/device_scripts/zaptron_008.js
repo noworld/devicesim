@@ -18,25 +18,25 @@ var desc = "Zaptron x008 Microcomputer Brain - Buy a computer for the price of a
  *  
  *  */
 
-var a=0, f=0, x=0, y=0, pc = 0, sp = 0;
+var a   = 0;
+var f   = 1;
+var x   = 2;
+var y   = 3;
+var pch = 4;
+var pc = 5;
+var sph = 6;
+var spl = 7;
+var rfh = 8;
+var rfl = 9;
 
-//TODO: Use signed bytes instead of variables
-//TODO: Convert to true 8-bit
-var accum = 0;
-var flags = 1;
-var xreg = 2;
-var yreg = 3;
-var pcounter = 4;
-var stackp = 5;
-var registers = new Int8Array(6);
-
-var instructionQueue = new Array();
+var regs = new Int8Array(10);
+var instructionQueue = new Int8Array();
 var cycleCounter = 0;
-var refresh = 32768;
 var requestedAddress = -1;
 var opMsg;
 
 function init() {
+	regs[pc] = 128;	
 	return true;
 }
 
@@ -55,7 +55,8 @@ function poll() {
 	busMsg.setSource(thisDevice);
 	requestedAddress = -1;	
 	
-	d("Value of accumulator: " + a + "");
+	d("Value of accumulator: " + regs[a]);
+	d("Value of program counter: " + regs[pc]);
 	
 	if(cycleCounter == 0) {
 		d("CPU Cycle 0 - Begin New Cycle");
@@ -65,8 +66,8 @@ function poll() {
 		busMsg.getActiveSignals().add(SignalType.FETCH);
 		busMsg.getActiveSignals().add(SignalType.READ);
 		busMsg.getActiveSignals().add(SignalType.MEMORY);		
-		busMsg.setAddress(pc);
-		requestedAddress = pc++;
+		busMsg.setAddress(regs[pc]);
+		requestedAddress = regs[pc]++;
 	} else if(cycleCounter == 2 || cycleCounter == 3) {
 		d("CPU Cycle " + cycleCounter + " - Refresh");
 		busMsg.getActiveSignals().add(SignalType.REFRESH);
